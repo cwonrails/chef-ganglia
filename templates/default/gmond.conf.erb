@@ -347,10 +347,3 @@ collection_group {
     title = "Maximum Disk Space Used"
   }
 }
-
-<% if node['hostname'] =~ /ganglia/ -%>
-/* sFlow channel */
-udp_recv_channel {
-  port = 6343
-}
-<% end -%>

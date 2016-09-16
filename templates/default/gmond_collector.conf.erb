@@ -41,4 +41,11 @@ tcp_accept_channel {
   port = <%= @port %>
 }
 
+<% if node['hostname'] =~ /ganglia/ -%>
+/* sFlow channel */
+udp_recv_channel {
+  port = 6343
+}
+<% end -%>
+
 /* don't report metrics from the collector daemons */
