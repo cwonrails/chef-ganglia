@@ -348,7 +348,7 @@ collection_group {
   }
 }
 
-<% if node['hostname'] =~ /ganglia.voxops.net/ -%>
+<% if node['hostname'] =~ /ganglia/ -%>
 /* sFlow channel */
 udp_recv_channel {
   port = 6343
