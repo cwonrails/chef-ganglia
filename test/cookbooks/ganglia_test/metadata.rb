@@ -1,2 +1,2 @@
-depends "ganglia"
-name "ganglia_test"
+depends 'ganglia'
+name 'ganglia_test'

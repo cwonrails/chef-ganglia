@@ -1,0 +1,45 @@
+{
+  "name": "ganglia_server",
+  "description": "Ganglia Server Role",
+  "chef_type": "role",
+  "json_class": "Chef::Role",
+  "env_run_lists": {
+  },
+  "override_attributes": {
+    "ganglia": {
+      "xml_port":"8651",
+      "clusterport": {
+        "kitchen": "18649"
+      },
+      "host_cluster": {
+        "kitchen": 1
+      }
+    }
+  },
+  "run_list": [
+    "recipe[ganglia::default]",
+    "recipe[ganglia::gmond_collector]",
+    "recipe[ganglia::gmetad]",
+    "recipe[ganglia::web]"
+  ],
+  "default_attributes": {
+    "graphite_host": "localhost",
+    "ganglia": {
+      "from_source": true,
+      "enable_rrdcached": false,
+      "server_role": "ganglia_server",
+      "graphite_host": "localhost",
+      "graphite_prefix": "ganglia",
+      "unicast": true,
+      "grid_name": "Vox Media",
+      "gmetad": {
+        "xml_port": 8651,
+        "interactive_port": 8652,
+        "enable_two_gmetads": false
+      },
+      "web": {
+        "auth_system": "'disabled'"
+      }
+    }
+  }
+}

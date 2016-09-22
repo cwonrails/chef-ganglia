@@ -1,27 +1,26 @@
-default['ganglia']['version'] = "3.6.0"
+default['ganglia']['version'] = '3.6.0'
 default['ganglia']['uri'] = "http://downloads.sourceforge.net/project/ganglia/ganglia%20monitoring%20core/#{node['ganglia']['version']}/ganglia-#{node['ganglia']['version']}.tar.gz"
-default['ganglia']['webfrontend_version'] = "3.5.11"
+default['ganglia']['webfrontend_version'] = '3.5.11'
 default['ganglia']['webfrontend_uri'] = "http://downloads.sourceforge.net/project/ganglia/ganglia-web/#{node['ganglia']['webfrontend_version']}/ganglia-web-#{node['ganglia']['webfrontend_version']}.tar.gz"
-default['ganglia']['checksum'] = "89eae02e1a117040d60b3b561fe55f88d7f8cf41b94af1492969ef68e6797886"
-default['ganglia']['webfrontend_checksum'] = "5c0531d3f48c443e6329078f93748241d9c830374fca631e3480cb5b536ed46e"
-default['ganglia']['grid_name'] = "default"
+default['ganglia']['checksum'] = '89eae02e1a117040d60b3b561fe55f88d7f8cf41b94af1492969ef68e6797886'
+default['ganglia']['webfrontend_checksum'] = '5c0531d3f48c443e6329078f93748241d9c830374fca631e3480cb5b536ed46e'
+default['ganglia']['grid_name'] = 'default'
 default['ganglia']['unicast'] = false
-default['ganglia']['server_role'] = "ganglia"
-default['ganglia']['user'] = "nobody"
-default['ganglia']['rrd_rootdir'] = "/var/lib/ganglia/rrds"
+default['ganglia']['server_role'] = 'ganglia'
+default['ganglia']['user'] = 'nobody'
+default['ganglia']['rrd_rootdir'] = '/var/lib/ganglia/rrds'
 default['ganglia']['gmetad']['xml_port'] = 8651
 default['ganglia']['gmetad']['interactive_port'] = 8652
 default['ganglia']['gmetad']['trusted_hosts'] = nil
 default['ganglia']['spoof_hostname'] = false
 default['ganglia']['graphite_host'] = nil
 default['ganglia']['graphite_port'] = 2003
-default['ganglia']['graphite_path'] = "datacenter1.gmetad.%s.%h.%m"
-
+default['ganglia']['graphite_path'] = 'datacenter1.gmetad.%s.%h.%m'
 
 case node['platform']
-when "ubuntu", "debian"
+when 'ubuntu', 'debian'
   default['ganglia']['from_source'] = false
-when "redhat", "centos", "fedora"
+when 'redhat', 'centos', 'fedora'
   default['ganglia']['from_source'] = true
 end
 
@@ -33,7 +32,7 @@ end
 # Notes:
 # * don't use port 8649
 # * don't put spaces in cluster names
-#default['ganglia']['clusterport'] = {
+# default['ganglia']['clusterport'] = {
 #                                    "default"       => 18649
 #                                  }
 # this is set on the host to determine which cluster it should join
@@ -41,7 +40,7 @@ end
 # that have a value of 1.  If a machine is part of two clusters,
 # it will show up in both. If this isn't overridden in the role,
 # it'll show up in the default cluster.
-default['ganglia']['host_cluster'] = {"default" => 1}
+default['ganglia']['host_cluster'] = { 'default' => 1 }
 
 # attributes relevant to rrdcached
 default['ganglia']['enable_rrdcached'] = true
@@ -49,9 +48,9 @@ default['ganglia']['enable_rrdcached'] = true
 # this should be the same as the user running gmetad
 default['ganglia']['rrdcached']['user'] = node['ganglia']['user']
 # use this socket for gmetad
-default['ganglia']['rrdcached']['main_socket'] = "/tmp/rrdcached.sock"
+default['ganglia']['rrdcached']['main_socket'] = '/tmp/rrdcached.sock'
 # use this socket for the web ui
-default['ganglia']['rrdcached']['limited_socket'] = "/tmp/rrdacached_limited.sock"
+default['ganglia']['rrdcached']['limited_socket'] = '/tmp/rrdacached_limited.sock'
 # where do the ganglia rrds live
 default['ganglia']['rrdcached']['ganglia_rrds'] = node['ganglia']['rrd_rootdir']
 # how often to write rrds in secs
@@ -68,4 +67,4 @@ default['ganglia']['web']['auth_system'] = 'disabled'
 default['ganglia']['enable_two_gmetads'] = false
 default['ganglia']['two_gmetads']['xml_port'] = 8661
 default['ganglia']['two_gmetads']['interactive_port'] = 8662
-default['ganglia']['two_gmetads']['empty_rrd_rootdir'] = "/var/lib/ganglia/empty-rrds-dir"
+default['ganglia']['two_gmetads']['empty_rrd_rootdir'] = '/var/lib/ganglia/empty-rrds-dir'

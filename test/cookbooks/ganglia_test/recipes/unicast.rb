@@ -1,2 +1,2 @@
 node.set[:ganglia][:unicast] = true
-include_recipe "ganglia::default"
+include_recipe 'ganglia::default'

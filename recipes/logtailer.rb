@@ -8,6 +8,6 @@
 
 # we need all the packgages installed and so on.  also, this node should have
 # its own ganglia client.
-include_recipe "ganglia::default"
+include_recipe 'ganglia::default'
 
-package "ganglia-logtailer"
+package 'ganglia-logtailer'

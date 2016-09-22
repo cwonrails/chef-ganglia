@@ -1,9 +1,9 @@
-if platform?( "redhat", "centos", "fedora" )
-  %w[apr-devel libconfuse-devel expat-devel rrdtool-devel].each do |p|
+if platform?('redhat', 'centos', 'fedora')
+  %w(apr-devel libconfuse-devel expat-devel rrdtool-devel).each do |p|
     package p
   end
-elsif platform?("ubuntu", "debian")
-  %w[build-essential libconfuse-dev librrd-dev libexpat1-dev libapr1-dev python-dev].each do |p|
+elsif platform?('ubuntu', 'debian')
+  %w(build-essential libconfuse-dev librrd-dev libexpat1-dev libapr1-dev python-dev).each do |p|
     package p
   end
 end
@@ -15,57 +15,55 @@ end
 
 src_path = "/usr/src/ganglia-#{node['ganglia']['version']}"
 
-execute "untar ganglia" do
+execute 'untar ganglia' do
   command "tar xzf ganglia-#{node['ganglia']['version']}.tar.gz"
   creates src_path
-  cwd "/usr/src"
+  cwd '/usr/src'
 end
 
-execute "configure ganglia build" do
-  command "./configure --with-gmetad --with-libpcre=no --sysconfdir=/etc/ganglia --prefix=/usr"
+execute 'configure ganglia build' do
+  command './configure --with-gmetad --with-libpcre=no --sysconfdir=/etc/ganglia --prefix=/usr'
   creates "#{src_path}/config.log"
   cwd src_path
 end
 
-execute "build ganglia" do
-  command "make"
+execute 'build ganglia' do
+  command 'make'
   creates "#{src_path}/gmond/gmond"
   cwd src_path
 end
 
-execute "install ganglia" do
-  command "make install"
-  creates "/usr/sbin/gmond"
+execute 'install ganglia' do
+  command 'make install'
+  creates '/usr/sbin/gmond'
   cwd src_path
 end
 
-link "/usr/lib/ganglia" do
-  to "/usr/lib64/ganglia"
+link '/usr/lib/ganglia' do
+  to '/usr/lib64/ganglia'
   only_if do
-    node['kernel']['machine'] == "x86_64" and
-      platform?( "redhat", "centos", "fedora" )
+    (node['kernel']['machine'] == 'x86_64') &&
+      platform?('redhat', 'centos', 'fedora')
   end
 end
 
-directory "/usr/lib64/ganglia/python_modules" do
-  owner "root"
-  group "root"
-  mode 00755
+directory '/usr/lib64/ganglia/python_modules' do
+  owner 'root'
+  group 'root'
+  mode 0o0755
   action :create
 end
 
-directory "/etc/ganglia/conf.d" do
-  owner "root"
-  group "root"
-  mode 00755
+directory '/etc/ganglia/conf.d' do
+  owner 'root'
+  group 'root'
+  mode 0o0755
   action :create
 end
 
-cookbook_file "/etc/ganglia/conf.d/modpython.conf" do
-  source "modpython.conf"
-  owner "root"
-  group "root"
-  mode 00644
+cookbook_file '/etc/ganglia/conf.d/modpython.conf' do
+  source 'modpython.conf'
+  owner 'root'
+  group 'root'
+  mode 0o0644
 end
-
-

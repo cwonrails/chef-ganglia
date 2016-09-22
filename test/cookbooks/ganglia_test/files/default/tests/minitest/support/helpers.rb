@@ -7,4 +7,3 @@ module Helpers
     include MiniTest::Chef::Resources
   end
 end
-

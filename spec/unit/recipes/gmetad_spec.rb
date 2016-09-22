@@ -10,7 +10,7 @@ describe 'ganglia::gmetad' do
   end
   before do
     hosts = []
-    ['host1', 'host2'].each do |host|
+    %w(host1 host2).each do |host|
       n = stub_node(platform: 'ubuntu', version: '12.04') do |node|
         node.name(host)
         node.automatic['ipaddress'] = host
@@ -26,9 +26,9 @@ describe 'ganglia::gmetad' do
   it 'creates the rrd dir' do
     expect(chef_run).to create_directory('/var/lib/ganglia/rrds').with(
       owner: 'nobody'
-      )
+    )
   end
-  context "default config" do
+  context 'default config' do
     it 'installs rrdcached' do
       expect(chef_run).to install_package('rrdcached')
     end
@@ -43,15 +43,16 @@ describe 'ganglia::gmetad' do
       expect(chef_run).to install_package('socat')
     end
     it 'creates gmetad.conf' do
-      expect(chef_run).to create_template("/etc/ganglia/gmetad.conf").with(
+      expect(chef_run).to create_template('/etc/ganglia/gmetad.conf').with(
         variables: {
-          :clusters => {"default" => 18649},
-          :hosts => ["host1", "host2"],
-          :grid_name => "default"
+          clusters: { 'default' => 18_649 },
+          hosts: %w(host1 host2),
+          grid_name: 'default'
         }
       )
-      expect(chef_run).to render_file("/etc/ganglia/gmetad.conf").with_content(
-        %Q[data_source "default" host2:18649 host1:18649])
+      expect(chef_run).to render_file('/etc/ganglia/gmetad.conf').with_content(
+        %(data_source "default" host2:18649 host1:18649)
+      )
     end
   end
   context 'unicast with search' do
@@ -65,7 +66,7 @@ describe 'ganglia::gmetad' do
     end
     before do
       hosts = []
-      ['host1', 'host2'].each do |host|
+      %w(host1 host2).each do |host|
         n = stub_node(platform: 'ubuntu', version: '12.04') do |node|
           node.name(host)
           node.automatic['ipaddress'] = host
@@ -76,23 +77,23 @@ describe 'ganglia::gmetad' do
     end
     it 'creates gmetad.conf template' do
       expect(chef_run).to create_template('/etc/ganglia/gmetad.conf').with(
-        :variables => {
-          :clusters => { 'default' => 18649 },
-          :hosts => ['host1', 'host2'],
-          :xml_port => 8651,
-          :interactive_port => 8652,
-          :rrd_rootdir => '/var/lib/ganglia/rrds',
-          :write_rrds => "on",
-          :grid_name => 'default'
-          })
+        variables: {
+          clusters: { 'default' => 18_649 },
+          hosts: %w(host1 host2),
+          xml_port: 8651,
+          interactive_port: 8652,
+          rrd_rootdir: '/var/lib/ganglia/rrds',
+          write_rrds: 'on',
+          grid_name: 'default'
+        }
+      )
     end
     it 'gmetad.conf notifies gmetad to restart' do
       gmetad_conf = chef_run.template('/etc/ganglia/gmetad.conf')
-      expect(gmetad_conf).to notify('service[gmetad]').to(:restart)      
+      expect(gmetad_conf).to notify('service[gmetad]').to(:restart)
     end
     it 'does not include iptables' do
       expect(chef_run).to_not include_recipe('ganglia::iptables')
-      
     end
   end
   context 'unicast with two gmetads and empty search' do
@@ -110,27 +111,29 @@ describe 'ganglia::gmetad' do
     end
     it 'creates gmetad.conf template' do
       expect(chef_run).to create_template('/etc/ganglia/gmetad.conf').with(
-        :variables => {
-          :clusters => { 'default' => 18649 },
-          :hosts => ['127.0.0.1'],
-          :xml_port => 8651,
-          :interactive_port => 8652,
-          :rrd_rootdir => '/var/lib/ganglia/rrds',
-          :write_rrds => "on",
-          :grid_name => 'default'
-          })
+        variables: {
+          clusters: { 'default' => 18_649 },
+          hosts: ['127.0.0.1'],
+          xml_port: 8651,
+          interactive_port: 8652,
+          rrd_rootdir: '/var/lib/ganglia/rrds',
+          write_rrds: 'on',
+          grid_name: 'default'
+        }
+      )
     end
     it 'creates gmetad-norrds.conf template' do
       expect(chef_run).to create_template('/etc/ganglia/gmetad-norrds.conf').with(
-        :variables => {
-          :clusters => { 'default' => 18649 },
-          :hosts => ['127.0.0.1'],
-          :xml_port => 8661,
-          :interactive_port => 8662,
-          :rrd_rootdir => '/var/lib/ganglia/empty-rrds-dir',
-          :write_rrds => "off",
-          :grid_name => 'default'
-          })
+        variables: {
+          clusters: { 'default' => 18_649 },
+          hosts: ['127.0.0.1'],
+          xml_port: 8661,
+          interactive_port: 8662,
+          rrd_rootdir: '/var/lib/ganglia/empty-rrds-dir',
+          write_rrds: 'off',
+          grid_name: 'default'
+        }
+      )
     end
   end
   context 'two gmetad config' do
@@ -144,16 +147,18 @@ describe 'ganglia::gmetad' do
     end
     it 'creates an empty rrddir' do
       expect(chef_run).to create_directory('/var/lib/ganglia/empty-rrds-dir').with(
-        :owner => 'nobody',
-        )
+        owner: 'nobody'
+      )
     end
     it 'creates second gmetad init script' do
       expect(chef_run).to create_template('/etc/init.d/gmetad-norrds').with(
         variables: {
-          :gmetad_name => 'gmetad-norrds'
-          })
+          gmetad_name: 'gmetad-norrds'
+        }
+      )
       expect(chef_run).to render_file('/etc/init.d/gmetad-norrds').with_content(
-        %Q[NAME=gmetad-norrds])
+        %(NAME=gmetad-norrds)
+      )
     end
     it 'second init script notifies second gmetad to restart' do
       gmetad_initscript = chef_run.template('/etc/init.d/gmetad-norrds')

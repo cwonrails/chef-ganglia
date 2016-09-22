@@ -1,1 +1,1 @@
-include_recipe "ganglia::gmetad"
+include_recipe 'ganglia::gmetad'

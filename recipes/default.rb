@@ -18,42 +18,42 @@
 #
 
 if node['ganglia']['from_source']
-  include_recipe "ganglia::source"
+  include_recipe 'ganglia::source'
 
-  if platform?("ubuntu", "debian")
-    cookbook_file "/etc/init.d/ganglia-monitor" do
-      source "ganglia-monitor.init.ubuntu"
-      owner "root"
-      group "root"
-      mode "0755"
+  if platform?('ubuntu', 'debian')
+    cookbook_file '/etc/init.d/ganglia-monitor' do
+      source 'ganglia-monitor.init.ubuntu'
+      owner 'root'
+      group 'root'
+      mode '0755'
     end
   else
-    execute "copy ganglia-monitor init script" do
-      command "cp " +
-        "/usr/src/ganglia-#{node['ganglia']['version']}/gmond/gmond.init " +
-        "/etc/init.d/ganglia-monitor"
-      not_if "test -f /etc/init.d/ganglia-monitor"
+    execute 'copy ganglia-monitor init script' do
+      command 'cp ' \
+              "/usr/src/ganglia-#{node['ganglia']['version']}/gmond/gmond.init " \
+              '/etc/init.d/ganglia-monitor'
+      not_if 'test -f /etc/init.d/ganglia-monitor'
     end
   end
 
-  user "ganglia" do
+  user 'ganglia' do
     action :create
-    comment "Ganglia User"
+    comment 'Ganglia User'
     system true
   end
 
 else
-  package "ganglia-monitor"
+  package 'ganglia-monitor'
 end
 
-directory "/etc/ganglia"
+directory '/etc/ganglia'
 
 # figure out which cluster(s) we should join
 # this section assumes you can send to multiple ports.
-ports=[]
+ports = []
 clusternames = []
-node['ganglia']['host_cluster'].each do |k,v|
-  if (v == 1 and node['ganglia']['clusterport'].has_key?(k))
+node['ganglia']['host_cluster'].each do |k, v|
+  if (v == 1) && node['ganglia']['clusterport'].key?(k)
     ports.push(node['ganglia']['clusterport'][k])
     clusternames.push(k)
   end
@@ -67,35 +67,37 @@ case node['ganglia']['unicast']
 when true
   # fill in the gmond collectors by attribute if it exists, search if you find anything, or localhost.
   gmond_collectors = []
-  if node['ganglia']['server_host']
-    gmond_collectors = [node['ganglia']['server_host']]
-  elsif gmond_collectors.empty?
-    gmond_collectors = search(:node, "role:#{node['ganglia']['server_role']} AND chef_environment:#{node.chef_environment}").map {|node| node['ipaddress']}
-  end rescue NoMethodError
-  if gmond_collectors.empty?
-     gmond_collectors = ["127.0.0.1"]
+  begin
+    if node['ganglia']['server_host']
+      gmond_collectors = [node['ganglia']['server_host']]
+    elsif gmond_collectors.empty?
+      gmond_collectors = search(:node, "role:#{node['ganglia']['server_role']} AND chef_environment:#{node.chef_environment}").map { |node| node['ipaddress'] }
+      end
+  rescue
+    NoMethodError
   end
+  gmond_collectors = ['127.0.0.1'] if gmond_collectors.empty?
 
-  template "/etc/ganglia/gmond.conf" do
-    source "gmond_unicast.conf.erb"
-    variables( :cluster_name => clusternames[0],
-               :gmond_collectors => gmond_collectors,
-               :ports => ports,
-               :spoof_hostname => node['ganglia']['spoof_hostname'],
-               :hostname => node.hostname )
-    notifies :restart, "service[ganglia-monitor]"
+  template '/etc/ganglia/gmond.conf' do
+    source 'gmond_unicast.conf.erb'
+    variables(cluster_name: clusternames[0],
+              gmond_collectors: gmond_collectors,
+              ports: ports,
+              spoof_hostname: node['ganglia']['spoof_hostname'],
+              hostname: node.hostname)
+    notifies :restart, 'service[ganglia-monitor]'
   end
 when false
-  template "/etc/ganglia/gmond.conf" do
-    source "gmond.conf.erb"
-    variables( :cluster_name => clusternames[0],
-               :ports => ports )
-    notifies :restart, "service[ganglia-monitor]"
+  template '/etc/ganglia/gmond.conf' do
+    source 'gmond.conf.erb'
+    variables(cluster_name: clusternames[0],
+              ports: ports)
+    notifies :restart, 'service[ganglia-monitor]'
   end
 end
 
-service "ganglia-monitor" do
-  pattern "gmond"
-  supports :restart => true
-  action [ :enable, :start ]
+service 'ganglia-monitor' do
+  pattern 'gmond'
+  supports restart: true
+  action [:enable, :start]
 end
