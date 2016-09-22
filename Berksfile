@@ -1,9 +1,6 @@
-site :opscode
+source 'https://supermarket.chef.io'
 
 metadata
-cookbook 'apt'
-
-group :test do
-  cookbook 'minitest-handler'
-  cookbook 'ganglia_test', path: 'test/cookbooks/ganglia_test'
-end
+cookbook 'apt', '= 2.3.10'
+cookbook 'build-essential', '1.4.4'
+cookbook 'iptables', '0.13.2'

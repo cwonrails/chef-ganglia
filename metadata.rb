@@ -11,8 +11,6 @@ version          '0.3.20'
   supports os
 end
 
-recommends 'graphite'
-
 depends 'iptables'
 
 depends 'runit'
