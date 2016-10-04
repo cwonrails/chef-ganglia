@@ -24,5 +24,6 @@ node['ganglia']['clusterport'].each do |clust, port|
     pattern "gmond_collector_#{clust}.conf"
     supports restart: true
     action [:enable, :start]
+    subscribes :restart, 'execute[install ganglia]'
   end
 end

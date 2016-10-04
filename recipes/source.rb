@@ -15,28 +15,32 @@ end
 
 src_path = "/usr/src/ganglia-#{node['ganglia']['version']}"
 
-execute 'untar ganglia' do
-  command "tar xzf ganglia-#{node['ganglia']['version']}.tar.gz"
-  creates src_path
-  cwd '/usr/src'
-end
 
-execute 'configure ganglia build' do
-  command './configure --with-gmetad --with-libpcre=no --sysconfdir=/etc/ganglia --prefix=/usr'
-  creates "#{src_path}/config.log"
+execute 'install ganglia' do
+  command 'make install'
   cwd src_path
+  action :nothing
 end
 
 execute 'build ganglia' do
   command 'make'
-  creates "#{src_path}/gmond/gmond"
   cwd src_path
+  action :nothing
+  notifies :run, 'execute[install ganglia]', :immediately
 end
 
-execute 'install ganglia' do
-  command 'make install'
-  creates '/usr/sbin/gmond'
+execute 'configure ganglia build' do
+  command './configure --with-gmetad --with-libpcre=no --sysconfdir=/etc/ganglia --prefix=/usr'
   cwd src_path
+  action :nothing
+  notifies :run, 'execute[build ganglia]', :immediately
+end
+
+execute 'untar ganglia' do
+  command "tar xzf ganglia-#{node['ganglia']['version']}.tar.gz"
+  creates src_path
+  cwd '/usr/src'
+  notifies :run, 'execute[configure ganglia build]', :immediately
 end
 
 link '/usr/lib/ganglia' do

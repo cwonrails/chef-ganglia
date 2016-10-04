@@ -25,6 +25,10 @@
   "default_attributes": {
     "graphite_host": "localhost",
     "ganglia": {
+      "version": "3.7.2",
+      "checksum": "5ea23da8e5b85da53216dd7c742c8154e7aa576e",
+      "webfrontend_version": "3.7.2",
+      "webfrontend_checksum": "98820187c98d24d3645b92d31060623de696dad331a361a19874898339523628",
       "from_source": true,
       "enable_rrdcached": false,
       "server_role": "ganglia_server",

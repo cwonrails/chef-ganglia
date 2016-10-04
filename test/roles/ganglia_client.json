@@ -21,6 +21,8 @@
   ],
   "default_attributes": {
     "ganglia": {
+      "version": "3.7.2",
+      "checksum": "5ea23da8e5b85da53216dd7c742c8154e7aa576e",
       "from_source": true,
       "enable_rrdcached": false,
       "server_role": "ganglia_server",

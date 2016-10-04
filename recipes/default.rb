@@ -100,4 +100,5 @@ service 'ganglia-monitor' do
   pattern 'gmond'
   supports restart: true
   action [:enable, :start]
+  subscribes :restart, 'execute[install ganglia]'
 end
