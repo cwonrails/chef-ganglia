@@ -4,6 +4,8 @@ else
   package 'gmetad'
 end
 
+include_recipe 'runit'
+
 directory '/var/lib/ganglia/rrds' do
   owner node['ganglia']['user']
   recursive true
@@ -20,7 +22,6 @@ if node['ganglia']['enable_rrdcached'] == true
   package 'rrdcached' do
     action :install
   end
-  include_recipe 'runit'
   runit_service 'rrdcached' do
     template_name 'rrdcached'
     options(user: node['ganglia']['rrdcached']['user'],
@@ -83,9 +84,15 @@ template '/etc/init.d/gmetad' do
   variables(gmetad_name: 'gmetad')
   notifies :restart, 'service[gmetad]'
 end
+
 service 'gmetad' do
   supports restart: true
-  action [:enable, :start]
+  action :nothing
+end
+
+runit_service 'gmetad' do
+  default_logger true
+  options({:gmetad_name => 'gmetad'})
 end
 
 if node['ganglia']['enable_two_gmetads']

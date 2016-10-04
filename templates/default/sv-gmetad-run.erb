@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+export NAME=<%= @options[:gmetad_name] %>
+exec /usr/sbin/gmetad -d 1 --conf /etc/ganglia/${NAME}.conf --pid-file /var/run/${NAME}.pid
